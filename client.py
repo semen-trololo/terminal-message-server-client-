@@ -2,53 +2,66 @@ import socket
 import threading
 import hashlib
 import os
-import random
 import time
 
 SERVER = '127.0.0.1', 5000
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('127.0.0.1', 0))
 
-def login():
+def reg():
+    password = input('Enter Password: ')
+    hash_pass = hashlib.md5(password.encode())
+    hash_pass = hash_pass.hexdigest()
+    message = '#reg' + ',' + hash_pass
+    sock.sendto(message.encode('utf-8'), SERVER)
+    data, addres = sock.recvfrom(1024)
+    return data.decode('utf-8'), hash_pass
+
+def start():
+    if os.path.exists('id.log') != True:
+        id, hash_pass = reg()
+        file = open('id.log', 'w')
+        file.write(str(id))
+        file.close()
+        # '\033[31m{}\033[0m'.format() Red Text
+        print('You ID# ' + '\033[31m{}\033[0m'.format(id))
+        return id, hash_pass
+    file = open('id.log', 'r')
+    id = file.read()
+    file.close()
+    print('You ID# ' + '\033[31m{}\033[0m'.format(id))
+    while True:
         password = input('Enter Password: ')
         hash_pass = hashlib.md5(password.encode())
         hash_pass = hash_pass.hexdigest()
-        del password
-        return hash_pass
-def get():
-    while 1:
-        message = '#get' + ',' + TITLE
+        message = '#get' + ',' + id + ',' + hash_pass
         sock.sendto(message.encode('utf-8'), SERVER)
-        while 1:
-            data, addres = sock.recvfrom(1024)
-            if data.decode('utf-8') == '#null':
-                flag = False
-                break
+        data, addres = sock.recvfrom(1024)
+        if data.decode('utf-8') == '#null':
+            break
+        print(data.decode('utf-8'))
+    return id, hash_pass
+
+def get():
+    while True:
+        message = '#get' + ',' + TITLE
+        # message = #get,id,pass
+        sock.sendto(message.encode('utf-8'), SERVER)
+        data, addres = sock.recvfrom(1024)
+        if data.decode('utf-8') != '#null':
             print(data.decode('utf-8'))
         time.sleep(30)
-def start():
-        if os.path.exists('id.log') != True:
-                tmp = random.randint(0, 5000000)
-                file = open('id.log', 'w')
-                file.write(str(tmp))
-                file.close()
-        file = open('id.log', 'r')
-        id = file.read()
-        file.close()
-        print('You ID#' + id)
-        return id
+
 def send_to():
     while 1:
         id_user = input('Enter ID_USER: ')
         text = input('Enter text: ')
         message = '#send_to' + ',' + TITLE + ',' + id_user + ',' + text
         sock.sendto(message.encode('utf-8'), SERVER)
-ID = start()
-PASSWORD = login()
-TITLE = ID + ',' + PASSWORD
-potok = threading.Thread(target=get)
-potok1 = threading.Thread(target=send_to)
-potok.start()
-potok1.start()
 
-
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(('127.0.0.1', 0))
+ID, PASS = start()
+TITLE = ID + ',' + PASS
+potok_teg = threading.Thread(target=get)
+potok_send = threading.Thread(target=send_to)
+potok_teg.start()
+potok_send.start()
