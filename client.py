@@ -45,16 +45,19 @@ def get():
         message = '#get' + ',' + TITLE
         # message = #get,id,pass
         sock.sendto(message.encode('utf-8'), SERVER)
-        data, addres = sock.recvfrom(1024)
-        if data.decode('utf-8') != '#null':
-            print(data.decode('utf-8'))
+        while True:
+            data, addres = sock.recvfrom(1024)
+            if data.decode('utf-8') != '#null':
+                print(data.decode('utf-8'))
+            else:
+                break
         time.sleep(30)
 
 def send_to():
-    while 1:
+    while True:
         id_user = input('Enter ID_USER: ')
         text = input('Enter text: ')
-        message = '#send_to' + ',' + TITLE + ',' + id_user + ',' + text
+        message = '#send_to' + ',' + id_user + ',' + text + ',' + ID
         sock.sendto(message.encode('utf-8'), SERVER)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
