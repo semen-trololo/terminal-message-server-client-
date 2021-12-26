@@ -27,7 +27,7 @@ def get(data,addres):
         result = cursor.fetchall()
         for i in result:
             if i[1] == data[1]:
-                message = '[' + i[3] + ']' + '\033[33m{}\033[0m'.format(i[2])
+                message = '\033[36m{}\033[0m'.format('[' + i[3] + ']') + '\033[33m{}\033[0m'.format(i[2])
                 sock.sendto(message.encode('utf-8'), addres)
                 #DELETE FROM message_tbl WHERE id = 1;
                 #print("DELETE FROM message_tbl WHERE id = " + i[0] + ";")
@@ -50,7 +50,7 @@ conn = pymysql.connect(host='localhost',
 
 while True:
     data, addres = sock.recvfrom(1024)
-    data = data.decode('utf-8').split(',')
+    data = data.decode('utf-8').split(',,')
     if data[0] == '#reg': # data(#reg , pass)
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM user_tbl;")
