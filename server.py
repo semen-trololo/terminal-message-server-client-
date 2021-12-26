@@ -53,15 +53,12 @@ while True:
     data = data.decode('utf-8').split(',,')
     if data[0] == '#reg': # data(#reg , pass)
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM user_tbl;")
-        result = cursor.fetchall()
-        tmp = random.randint(0, 5000000)
-        if tmp not in result:
-            select = "INSERT INTO user_tbl (id, pass) VALUES ('" + str(tmp) + "'" + ", '" + str(data[1]) + "'" + ");"
-            cursor.execute(select)
-            conn.commit()
-            cursor.close()
-            sock.sendto(str(tmp).encode('utf-8'), addres)
+        tmp = (random.randint(0, 5000000) + random.randint(0, 5000000)) // 2
+        select = "INSERT INTO user_tbl (id, pass) VALUES ('" + str(tmp) + "'" + ", '" + str(data[1]) + "'" + ");"
+        cursor.execute(select)
+        conn.commit()
+        cursor.close()
+        sock.sendto(str(tmp).encode('utf-8'), addres)
     elif data[0] == '#get':
         get(data, addres)
     elif data[0] == '#send_to':
