@@ -1,5 +1,9 @@
 # terminal-message-server-client
 A simple example of messaging in a terminal via a server.
+# Modules
+Python 3.9
+
+PyMySQL-1.0.2
 # Configuration DB
 CREATE DATABASE testdb;
 
