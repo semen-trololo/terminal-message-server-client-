@@ -39,10 +39,10 @@ def get(data,addres):
         sock.sendto('Not Indifiti'.encode('utf-8'), addres)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('127.0.0.1', 5000))
+sock.bind(('', 5000))
 print('Start Server')
 
-conn = pymysql.connect(host='localhost',
+conn = pymysql.connect(host='172.17.0.2',
         user='root',
         password='1234',
         db='testdb')
